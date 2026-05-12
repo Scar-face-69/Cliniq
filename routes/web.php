@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FamilyMemberController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\LabReportController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () { return view('pages.welcome'); });
 
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/consultation/new',      [ConsultationController::class, 'index'])->name('consultation.new');
     Route::post('/consultation/send',    [ConsultationController::class, 'send'])->name('consultation.send');
     Route::get('/consultations',         [ConsultationController::class, 'history'])->name('consultations');
+    Route::get('/consultations/{id}/pdf', [ConsultationController::class, 'exportPdf'])->name('consultations.pdf');
     Route::delete('/consultations/{id}', [ConsultationController::class, 'destroy'])->name('consultations.destroy');
 
     // Lab Reports
@@ -55,5 +57,13 @@ Route::post('/settings/password',            [\App\Http\Controllers\SettingsCont
 Route::post('/settings/notifications',       [\App\Http\Controllers\SettingsController::class, 'updateNotifications'])->name('settings.notifications');
 Route::post('/settings/delete-account',      [\App\Http\Controllers\SettingsController::class, 'deleteAccount'])->name('settings.delete');
     Route::get('/forgot-password',$soon)->name('password.request');
+
+    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggleAdmin');
+        Route::get('/consultations', [AdminController::class, 'consultations'])->name('consultations');
+        Route::get('/lab-reports', [AdminController::class, 'labReports'])->name('labReports');
+    });
 
 });

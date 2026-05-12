@@ -24,21 +24,21 @@
 
 {{-- FLASH MESSAGES --}}
 @if(session('success'))
-    <div class="fp-flash success">✓ {{ session('success') }}</div>
+    <div class="fp-flash success" role="status">{{ session('success') }}</div>
 @endif
 @if(session('error'))
-    <div class="fp-flash error">✕ {{ session('error') }}</div>
+    <div class="fp-flash error" role="alert">{{ session('error') }}</div>
 @endif
 
 {{-- STATS --}}
 <div class="fp-stats">
-    <div class="fp-stat-card" style="--sc:#60A5FA;">
+    <div class="fp-stat-card" style="--sc:#DC2626;">
         <div class="fp-stat-label">Total Members</div>
         <div class="fp-stat-value">{{ $stats['total'] }}</div>
         <span class="fp-stat-badge b">All active</span>
     </div>
-    <div class="fp-stat-card" style="--sc:#00D68F;">
-        <div class="fp-stat-label">Healthy</div>
+    <div class="fp-stat-card" style="--sc:#DC2626;">
+        <div class="fp-stat-label">Stable</div>
         <div class="fp-stat-value">{{ $stats['healthy'] }}</div>
         <span class="fp-stat-badge g">No issues</span>
     </div>
@@ -66,11 +66,11 @@
         <div class="fp-card-top">
             {{-- Actions --}}
             <div class="fp-card-actions">
-                <button class="fp-act-btn" onclick="openEditModal({{ $member->id }}, '{{ addslashes($member->name) }}', '{{ $member->relation }}', '{{ $member->age }}', '{{ $member->gender }}', '{{ $member->blood_group }}', '{{ addslashes($member->allergies) }}', '{{ addslashes($member->conditions) }}', '{{ addslashes($member->medications) }}')">✏</button>
+                <button type="button" class="fp-act-btn" title="Edit" onclick="openEditModal({{ $member->id }}, '{{ addslashes($member->name) }}', '{{ $member->relation }}', '{{ $member->age }}', '{{ $member->gender }}', '{{ $member->blood_group }}', '{{ addslashes($member->allergies) }}', '{{ addslashes($member->conditions) }}', '{{ addslashes($member->medications) }}')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                 <form method="POST" action="/family/{{ $member->id }}" style="display:inline;" onsubmit="return confirm('Remove {{ $member->name }} from your family?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="fp-act-btn del">🗑</button>
+                    <button type="submit" class="fp-act-btn del" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
                 </form>
             </div>
 
@@ -198,7 +198,6 @@
                             <option value="">Select</option>
                             <option>Male</option>
                             <option>Female</option>
-                            <option>Other</option>
                         </select>
                     </div>
                     <div class="fp-form-group">

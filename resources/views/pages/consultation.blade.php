@@ -24,14 +24,14 @@
             {{-- Primary user --}}
             <div class="cs-member-btn active" id="member-0"
                  onclick="selectMember(0, '{{ auth()->user()->name }}', this)">
-                <div class="cs-member-avatar" style="background:linear-gradient(135deg,#00D68F,#00B377);color:#0A1628;">
+                <div class="cs-member-avatar">
                     {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                 </div>
                 <div>
                     <div class="cs-member-name">{{ auth()->user()->name }}</div>
                     <div class="cs-member-meta">Primary account</div>
                 </div>
-                <div class="cs-member-dot" style="background:#00D68F;"></div>
+                <div class="cs-member-dot" style="background:#DC2626;"></div>
             </div>
 
             {{-- Family members --}}
@@ -63,7 +63,7 @@
                 <span class="cs-hi-badge {{ $c->risk_level }}">{{ strtoupper($c->risk_level) }} risk</span>
             </a>
             @empty
-            <div style="font-size:12px;color:#334155;padding:8px 0;">No sessions yet</div>
+            <div class="cs-history-empty">No sessions yet</div>
             @endforelse
         </div>
     </div>
@@ -84,7 +84,10 @@
                 </div>
             </div>
             <div class="cs-topbar-right">
-                <button class="cs-top-btn" onclick="startNewChat()">🔄 New Chat</button>
+                <button type="button" class="cs-top-btn" onclick="startNewChat()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                    New Chat
+                </button>
             </div>
         </div>
 
@@ -96,7 +99,7 @@
                 <div class="msg-avatar ai">+</div>
                 <div class="msg-content">
                     <div class="msg-bubble" id="welcomeText">
-                        Hello, <strong id="greetName">{{ explode(' ', auth()->user()->name)[0] }}</strong>! 👋
+                        Hello, <strong id="greetName">{{ explode(' ', auth()->user()->name)[0] }}</strong>.
                         I'm your ClinIQ AI assistant, powered by Gemini.<br><br>
                         I'm here to help analyze your symptoms and provide safe, structured health guidance.
                         Please describe what you're experiencing today — be as specific as possible about your
@@ -131,15 +134,17 @@
         {{-- Input area --}}
         <div class="cs-input-area">
             <div class="cs-quick-btns">
-                <button class="cs-quick-btn" onclick="quickSymptom('I have a high fever')">🤒 Fever</button>
-                <button class="cs-quick-btn" onclick="quickSymptom('I have a severe headache')">🤕 Headache</button>
-                <button class="cs-quick-btn" onclick="quickSymptom('I feel nauseous and have stomach pain')">🤢 Nausea</button>
-                <button class="cs-quick-btn" onclick="quickSymptom('I am having difficulty breathing')">😮‍💨 Breathing</button>
-                <button class="cs-quick-btn" onclick="quickSymptom('I have body aches and fatigue')">🦴 Body aches</button>
-                <button class="cs-quick-btn" onclick="quickSymptom('I have chest pain')">❤️ Chest pain</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I have a high fever')">Fever</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I have a severe headache')">Headache</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I feel nauseous and have stomach pain')">Nausea</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I am having difficulty breathing')">Breathing</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I have body aches and fatigue')">Body aches</button>
+                <button type="button" class="cs-quick-btn" onclick="quickSymptom('I have chest pain')">Chest pain</button>
             </div>
             <div class="cs-input-row">
-                <button class="cs-upload-btn" title="Upload lab report">📎</button>
+                <button type="button" class="cs-upload-btn" title="Upload lab report">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                </button>
                 <textarea
                     class="cs-input-box"
                     id="messageInput"
@@ -147,10 +152,12 @@
                     onkeydown="handleKey(event)"
                     rows="1"
                 ></textarea>
-                <button class="cs-send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+                <button type="button" class="cs-send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
             </div>
             <div class="cs-disclaimer">
-                ⚕ ClinIQ is not a substitute for professional medical advice. Always consult a licensed doctor for diagnosis and treatment.
+                ClinIQ is not a substitute for professional medical advice. Always consult a licensed doctor for diagnosis and treatment.
             </div>
         </div>
 
@@ -168,22 +175,31 @@
 <script>
 let isLoading = false;
 
+const SVG_BRAIN = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+const SVG_RISK_LOW = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+const SVG_RISK_MED = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+const SVG_RISK_HIGH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+const SVG_MAP = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const SVG_FILE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+const SVG_ALERT = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+
+function riskIconSvg(level) {
+    if (level === 'high') return SVG_RISK_HIGH;
+    if (level === 'medium') return SVG_RISK_MED;
+    return SVG_RISK_LOW;
+}
+
 function selectMember(id, name, el) {
-    // Update hidden input
     document.getElementById('selectedMemberId').value = id > 0 ? id : '';
 
-    // Update greeting
     const firstName = name.split(' ')[0];
     document.getElementById('greetName').textContent = firstName;
 
-    // Reset consultation
     document.getElementById('consultationId').value = '';
 
-    // Update active button
     document.querySelectorAll('.cs-member-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
 
-    // Clear messages and show fresh welcome
     const messages = document.getElementById('messages');
     messages.innerHTML = '';
 
@@ -194,7 +210,7 @@ function selectMember(id, name, el) {
         <div class="msg-avatar ai">+</div>
         <div class="msg-content">
             <div class="msg-bubble">
-                Hello, <strong>${firstName}</strong>! 👋
+                Hello, <strong>${firstName}</strong>.
                 I'm your ClinIQ AI assistant, powered by Gemini.<br><br>
                 I'm here to help analyze your symptoms and provide safe, structured health guidance.
                 Please describe what <strong>${firstName}</strong> is experiencing today.
@@ -203,7 +219,6 @@ function selectMember(id, name, el) {
         </div>`;
     messages.appendChild(welcome);
 
-    // Clear input
     document.getElementById('messageInput').value = '';
 }
 
@@ -225,7 +240,6 @@ function startNewChat() {
     const messages = document.getElementById('messages');
     messages.innerHTML = '';
 
-    const memberId = document.getElementById('selectedMemberId').value;
     const activeBtn = document.querySelector('.cs-member-btn.active');
     const name = activeBtn ? activeBtn.querySelector('.cs-member-name').textContent.trim() : '{{ explode(" ", auth()->user()->name)[0] }}';
     const firstName = name.split(' ')[0];
@@ -237,7 +251,7 @@ function startNewChat() {
         <div class="msg-avatar ai">+</div>
         <div class="msg-content">
             <div class="msg-bubble">
-                Hello, <strong>${firstName}</strong>! 👋
+                Hello, <strong>${firstName}</strong>.
                 I'm your ClinIQ AI assistant, powered by Gemini.<br><br>
                 Please describe what you're experiencing today.
             </div>
@@ -340,15 +354,16 @@ function appendAIResponse(response) {
             <div class="ai-emergency">
                 <div class="ai-emergency-header">
                     <div class="ai-emergency-dot"></div>
-                    <div class="ai-emergency-title">🚨 MEDICAL EMERGENCY DETECTED</div>
+                    <div class="ai-emergency-title">Medical emergency detected</div>
                 </div>
                 <div class="ai-emergency-body">
                     ${escapeHtml(response.risk_explanation || 'This may be a medical emergency.')}
                     <br><br>
-                    <strong style="color:#EF4444;">Seek immediate medical attention or go to the nearest hospital.</strong>
+                    <strong style="color:#DC2626;">Seek immediate medical attention or go to the nearest hospital.</strong>
                 </div>
-                <button class="ai-emergency-btn" onclick="window.open('https://www.google.com/maps/search/hospital+near+me')">
-                    🏥 Find Nearest Hospital
+                <button type="button" class="ai-emergency-btn" onclick="window.open('https://www.google.com/maps/search/hospital+near+me')">
+                    ${SVG_MAP}
+                    Find nearest hospital
                 </button>
             </div>`;
         document.getElementById('messages').insertAdjacentHTML('beforeend', html);
@@ -360,8 +375,8 @@ function appendAIResponse(response) {
     if (response.conditions && response.conditions.length > 0) {
         response.conditions.forEach(c => {
             const pct   = c.probability || 0;
-            const color = pct >= 60 ? 'linear-gradient(90deg,#00B377,#00D68F)' : pct >= 35 ? 'linear-gradient(90deg,#D97706,#F59E0B)' : 'linear-gradient(90deg,#DC2626,#EF4444)';
-            const clr   = pct >= 60 ? '#00D68F' : pct >= 35 ? '#F59E0B' : '#EF4444';
+            const color = pct >= 60 ? 'linear-gradient(90deg,#6B7280,#9CA3AF)' : pct >= 35 ? 'linear-gradient(90deg,#D97706,#F59E0B)' : 'linear-gradient(90deg,#DC2626,#EF4444)';
+            const clr   = pct >= 60 ? '#6B7280' : pct >= 35 ? '#F59E0B' : '#EF4444';
             conditionsHtml += `
                 <div class="ai-condition">
                     <span class="ai-cond-name">${escapeHtml(c.name)}</span>
@@ -387,19 +402,22 @@ function appendAIResponse(response) {
                         <div class="ai-otc-name">${escapeHtml(m.name)}</div>
                         <div class="ai-otc-dose">${escapeHtml(m.dosage)} • ${escapeHtml(m.frequency)}</div>
                     </div>
-                    <span class="ai-otc-safe">OTC Safe ✓</span>
+                    <span class="ai-otc-safe">OTC Safe</span>
                 </div>`;
         });
     }
 
     const risk      = response.risk_level || 'low';
-    const riskIcon  = risk === 'high' ? '🚨' : risk === 'medium' ? '⚠️' : '✅';
+    const riskIcon  = riskIconSvg(risk);
     const riskLabel = risk.toUpperCase() + ' RISK';
 
     const html = `
+        <div class="msg-row ai">
+            <div class="msg-avatar ai">+</div>
+            <div class="msg-content">
         <div class="ai-card">
             <div class="ai-card-header">
-                <span class="ai-card-icon">🧠</span>
+                <span class="ai-card-icon">${SVG_BRAIN}</span>
                 <span class="ai-card-title">AI Analysis Complete</span>
             </div>
             <div class="ai-card-body">
@@ -445,12 +463,14 @@ function appendAIResponse(response) {
                 </div>` : ''}
 
                 <div class="ai-disclaimer">
-                    ⚕ ${escapeHtml(response.disclaimer || 'This information is for guidance only and is not a substitute for a licensed medical professional.')}
+                    ${escapeHtml(response.disclaimer || 'This information is for guidance only and is not a substitute for a licensed medical professional.')}
                 </div>
             </div>
             <div class="ai-card-footer">
-                <button class="ai-footer-btn primary" onclick="window.open('https://www.google.com/maps/search/doctor+near+me')">🏥 Find Doctor</button>
-                <button class="ai-footer-btn secondary" onclick="window.print()">📄 Save Report</button>
+                <button type="button" class="ai-footer-btn primary" onclick="window.open('https://www.google.com/maps/search/doctor+near+me')">${SVG_MAP}Find Doctor</button>
+                <button type="button" class="ai-footer-btn secondary" onclick="window.print()">${SVG_FILE}Save Report</button>
+            </div>
+        </div>
             </div>
         </div>`;
 
@@ -463,8 +483,9 @@ function appendError(msg) {
         <div class="msg-row ai">
             <div class="msg-avatar ai">+</div>
             <div class="msg-content">
-                <div class="msg-bubble" style="border-color:rgba(239,68,68,0.2);color:#F87171;">
-                    ⚠️ ${escapeHtml(msg)}
+                <div class="msg-bubble msg-bubble--error">
+                    <span class="msg-error-icon">${SVG_ALERT}</span>
+                    <span>${escapeHtml(msg)}</span>
                 </div>
             </div>
         </div>`;
@@ -493,4 +514,4 @@ document.getElementById('messageInput').addEventListener('input', function() {
 
 scrollToBottom();
 </script>
-@endpush    
+@endpush

@@ -36,23 +36,23 @@ class LabReport extends Model
         return $this->belongsTo(FamilyMember::class);
     }
 
-    public function getFileIconAttribute()
+    public function getFileIconAttribute(): string
     {
-        return match(true) {
-            str_contains($this->file_type, 'pdf')  => '📄',
-            str_contains($this->file_type, 'image') => '🖼',
-            default => '📋',
+        return match (true) {
+            str_contains($this->file_type, 'pdf') => 'pdf',
+            str_contains($this->file_type, 'image') => 'image',
+            default => 'file',
         };
     }
 
-    public function getFileIconBgAttribute()
+    public function getFileIconBgAttribute(): string
     {
-        return match(true) {
+        return match (true) {
             str_contains(strtolower($this->report_type ?? ''), 'blood') ||
-            str_contains(strtolower($this->report_type ?? ''), 'cbc')   => 'rgba(239,68,68,0.08)',
-            str_contains(strtolower($this->report_type ?? ''), 'thyroid') => 'rgba(96,165,250,0.08)',
-            str_contains(strtolower($this->report_type ?? ''), 'urine')   => 'rgba(245,158,11,0.08)',
-            default => 'rgba(0,214,143,0.08)',
+            str_contains(strtolower($this->report_type ?? ''), 'cbc') => 'rgba(220,38,38,0.1)',
+            str_contains(strtolower($this->report_type ?? ''), 'thyroid') => 'rgba(243,244,246,0.08)',
+            str_contains(strtolower($this->report_type ?? ''), 'urine') => 'rgba(245,158,11,0.1)',
+            default => 'rgba(243,244,246,0.06)',
         };
     }
 }

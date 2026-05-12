@@ -23,6 +23,7 @@ class User extends Authenticatable
     'phone', 'blood_group', 'date_of_birth', 'gender',
     'height', 'weight', 'allergies', 'conditions', 'medications',
     'notif_consultations', 'notif_lab_reports', 'notif_family_alerts', 'notif_tips',
+    'is_admin',
 ];
 
     /**
@@ -45,6 +46,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
+
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
+    }
+
+    public function labReports()
+    {
+        return $this->hasMany(LabReport::class);
+    }
+
+    public function familyMembers()
+    {
+        return $this->hasMany(FamilyMember::class);
+    }
 }
+

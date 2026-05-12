@@ -61,7 +61,15 @@ class ConsultationController extends Controller
                 'medications' => $member->medications,
             ];
         } else {
-            $profile = ['name' => auth()->user()->name];
+            $user = auth()->user();
+            $profile = [
+                'name'        => $user->name,
+                'blood_group' => $user->blood_group,
+                'gender'      => $user->gender,
+                'allergies'   => $user->allergies,
+                'conditions'  => $user->conditions,
+                'medications' => $user->medications,
+            ];
         }
 
         if ($request->consultation_id) {
@@ -75,20 +83,25 @@ class ConsultationController extends Controller
             ]);
         }
 
+        // Save user message
         ConsultationMessage::create([
             'consultation_id' => $consultation->id,
             'role'            => 'user',
             'content'         => $request->message,
         ]);
 
+        // Build history with ONLY user messages (not AI JSON responses)
+        // This prevents the huge JSON from breaking Gemini on follow-up messages
         $history = $consultation->messages()
             ->orderBy('created_at')
+            ->where('role', 'user')
             ->get()
-            ->map(fn($m) => ['role' => $m->role, 'content' => $m->content])
+            ->map(fn($m) => ['role' => 'user', 'content' => $m->content])
             ->toArray();
 
         $aiResponse = $this->claude->analyze($request->message, $profile, $history);
 
+        // Save AI message as JSON
         ConsultationMessage::create([
             'consultation_id' => $consultation->id,
             'role'            => 'assistant',

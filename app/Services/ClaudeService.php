@@ -15,8 +15,6 @@ class ClaudeService
         $this->apiKey = config('services.gemini.key');
     }
 
-    // ── Consultation ─────────────────────────────────────────────────────────
-
     public function analyze(string $symptoms, array $profile = [], array $history = []): array
     {
         if (!$this->apiKey) {
@@ -39,7 +37,7 @@ class ClaudeService
                 ],
                 'generationConfig' => [
                     'temperature'     => 0.3,
-                    'maxOutputTokens' => 1500,
+                    'maxOutputTokens' => 8192,
                 ],
             ]);
 
@@ -58,8 +56,6 @@ class ClaudeService
         }
     }
 
-    // ── Lab Report Analysis ──────────────────────────────────────────────────
-
     public function analyzeLabReport(string $filePath, string $mimeType, string $reportType): array
     {
         if (!$this->apiKey) {
@@ -74,7 +70,6 @@ class ClaudeService
             return $this->fallbackLabAnalysis();
         }
 
-        // Fix mime type for PDFs that come back as octet-stream
         if ($mimeType === 'application/octet-stream') {
             $ext      = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
             $mimeType = $ext === 'pdf' ? 'application/pdf' : 'image/jpeg';
@@ -152,8 +147,6 @@ PROMPT;
         }
     }
 
-    // ── Parsers ──────────────────────────────────────────────────────────────
-
     protected function parseResponse(?string $content): array
     {
         if (!$content) {
@@ -211,8 +204,6 @@ PROMPT;
         return $parsed;
     }
 
-    // ── Fallbacks ────────────────────────────────────────────────────────────
-
     protected function fallbackResponse(): array
     {
         return [
@@ -247,8 +238,6 @@ PROMPT;
             'disclaimer' => 'This AI analysis is for informational purposes only and is not a substitute for professional medical advice.',
         ];
     }
-
-    // ── Prompt Builder ───────────────────────────────────────────────────────
 
     protected function buildPrompt(string $symptoms, array $profile = [], array $history = []): string
     {
@@ -319,4 +308,4 @@ IMPORTANT: Respond ONLY with valid JSON. No text before or after. No markdown ba
 risk_level must be exactly one of: "low", "medium", "high"
 PROMPT;
     }
-}
+}   
